@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "468826900144",
+    "firebase_url": "https://eventmanagementproject-ccb12-default-rtdb.firebaseio.com",
+    "project_id": "eventmanagementproject-ccb12",
+    "storage_bucket": "eventmanagementproject-ccb12.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:468826900144:android:f45616ab6a9142148b1d75",
+        "android_client_info": {
+          "package_name": "com.example.eventapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwxkCIVV3AKOM-JCvw-thGIcqTmvGuFK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:468826900144:android:f8c80e6614d2dae88b1d75",
+        "android_client_info": {
+          "package_name": "com.example.eventmanagementproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwxkCIVV3AKOM-JCvw-thGIcqTmvGuFK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
