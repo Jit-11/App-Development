@@ -40,4 +40,16 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation libs.firebase.storage
+    implementation libs.firebase.auth
+    implementation libs.glide
+    annotationProcessor libs.compiler
+    implementation libs.firebase.auth.v2101
+    implementation libs.firebase.database.v2030
+    implementation libs.firebase.storage.v2030
+    implementation libs.activity.ktx
+    implementation libs.glide.v4142
+    annotationProcessor libs.compiler.v4142
+    implementation libs.firebase.storage.v2000
+
 }

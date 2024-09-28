@@ -1,5 +1,14 @@
 [versions]
 agp = "8.5.1"
+compilerVersion = "4.14.2"
+firebaseAuth = "23.0.0"
+firebaseAuthVersion = "21.0.1"
+firebaseDatabaseVersion = "20.3.0"
+firebaseStorage = "20.3.0"
+firebaseStorageVersion = "20.0.0"
+glide = "4.12.0"
+compiler = "4.12.0"
+glideVersion = "4.14.2"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -12,6 +21,17 @@ playServicesMeasurementApi = "22.1.0"
 googleGmsGoogleServices = "4.4.2"
 
 [libraries]
+activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+compiler-v4142 = { module = "com.github.bumptech.glide:compiler", version.ref = "compilerVersion" }
+firebase-auth-v2101 = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuthVersion" }
+firebase-database-v2030 = { module = "com.google.firebase:firebase-database", version.ref = "firebaseDatabaseVersion" }
+firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseDatabase" }
+firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
+firebase-storage-v2000 = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorageVersion" }
+firebase-storage-v2030 = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glide-v4142 = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

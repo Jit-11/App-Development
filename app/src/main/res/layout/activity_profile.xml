@@ -57,6 +57,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+<!--
         <ImageView
             android:id="@+id/profileImage"
             android:layout_width="120dp"
@@ -67,6 +68,18 @@
             android:contentDescription="Name"
             android:scaleType="centerCrop"
             android:src="@drawable/profile" />
+-->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profileImage"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="Profile Image"
+            android:scaleType="centerCrop"
+            android:src="@drawable/profile"
+            app:shapeAppearanceOverlay="@style/CircularImageView"/>
 
         <TextView
             android:id="@+id/profileName"

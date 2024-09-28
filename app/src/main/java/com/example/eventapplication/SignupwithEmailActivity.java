@@ -17,6 +17,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,6 +30,7 @@ public class SignupwithEmailActivity extends AppCompatActivity {
     private boolean isPasswordVisible = false;
     private boolean isConfirmPasswordVisible = false;
     private DatabaseReference databaseReference;
+    private FirebaseAuth auth;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -43,7 +46,7 @@ public class SignupwithEmailActivity extends AppCompatActivity {
         passwordToggle = findViewById(R.id.passwordToggle);
         confirmPasswordToggle = findViewById(R.id.confirmPasswordToggle);
         signupButton = findViewById(R.id.signupButton);
-
+        auth = FirebaseAuth.getInstance();
 
         passwordToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,21 +121,30 @@ public class SignupwithEmailActivity extends AppCompatActivity {
         }
 
 
-        HelperClass user = new HelperClass(email, name, password, "");
-        String userId = databaseReference.push().getKey();
-        if (userId != null) {
-            databaseReference.child(userId).setValue(user)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(SignupwithEmailActivity.this, DashboardActivity.class);
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
-            Toast.makeText(this, "Failed to generate user ID", Toast.LENGTH_SHORT).show();
-        }
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // User created successfully
+                        FirebaseUser firebaseUser = auth.getCurrentUser(); // Get the user
+                        String userId = firebaseUser.getUid(); // Get user ID
+
+                        // Save additional user data to Firebase Database
+                        HelperClass user = new HelperClass(email, name, password, "", "");
+                        databaseReference.child(userId).setValue(user)
+                                .addOnCompleteListener(dbTask -> {
+                                    if (dbTask.isSuccessful()) {
+                                        Toast.makeText(this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(SignupwithEmailActivity.this, DashboardActivity.class);
+                                        startActivity(intent);
+                                        finish(); // Close the signup activity
+                                    } else {
+                                        Toast.makeText(this, "Failed to save user data: " + dbTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        // Handle errors
+                        Toast.makeText(this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

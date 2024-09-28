@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView forgotPassword;
 
     private DatabaseReference databaseReference;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         forgotPassword = findViewById(R.id.forgot_password);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+        auth = FirebaseAuth.getInstance();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,74 +70,81 @@ public class LoginActivity extends AppCompatActivity {
 
         if (Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
             // Input is an email address
-            verifyUserByEmail(input, enteredPassword);
+            loginWithEmail(input, enteredPassword);
         } else if (Patterns.PHONE.matcher(input).matches()) {
             // Input is a phone number
-            verifyUserByPhoneNumber(input, enteredPassword);
+            loginWithPhoneNumber(input, enteredPassword);
         } else {
             // Input is neither email nor phone number
             Toast.makeText(this, "Please enter a valid email or phone number", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void verifyUserByEmail(String email, String password) {
-        databaseReference.orderByChild("email").equalTo(email)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                HelperClass user = snapshot.getValue(HelperClass.class);
-                                if (user != null && user.getPassword().equals(password)) {
-                                    loginSuccess();
-                                    return;
-                                }
-                            }
+    private void loginWithEmail(String email, String password) {
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = auth.getCurrentUser();
+                        if (user != null) {
+                            checkUserInDatabase(user.getUid());
                         }
-                        loginFailed();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e("LoginActivity", "Database error: " + databaseError.getMessage());
-                        Toast.makeText(LoginActivity.this, "Login failed: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        loginFailed(task.getException());
                     }
                 });
     }
 
-    private void verifyUserByPhoneNumber(String phoneNumber, String password) {
-        databaseReference.orderByChild("phoneNumber").equalTo(phoneNumber)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                HelperClass user = snapshot.getValue(HelperClass.class);
-                                if (user != null && user.getPassword().equals(password)) {
-                                    loginSuccess();
-                                    return;
-                                }
-                            }
+    private void loginWithPhoneNumber(String phoneNumber, String password) {
+        // Here, we need to check if the phone number is linked with the account
+        auth.fetchSignInMethodsForEmail(phoneNumber + "@example.com") // Using a fabricated email
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        if (!task.getResult().getSignInMethods().isEmpty()) {
+                            // Phone number is linked, now try to sign in
+                            auth.signInWithEmailAndPassword(phoneNumber + "@example.com", password)
+                                    .addOnCompleteListener(signInTask -> {
+                                        if (signInTask.isSuccessful()) {
+                                            FirebaseUser user = auth.getCurrentUser();
+                                            if (user != null) {
+                                                checkUserInDatabase(user.getUid());
+                                            }
+                                        } else {
+                                            loginFailed(signInTask.getException());
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Phone number not registered", Toast.LENGTH_SHORT).show();
                         }
-                        loginFailed();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e("LoginActivity", "Database error: " + databaseError.getMessage());
-                        Toast.makeText(LoginActivity.this, "Login failed: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.e("LoginActivity", "Error checking phone number: " + task.getException());
                     }
                 });
     }
 
-    private void loginSuccess() {
-        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-        startActivity(intent);
-        finish();
+    private void checkUserInDatabase(String userId) {
+        databaseReference.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    loginFailed(new Exception("User data not found"));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("LoginActivity", "Database error: " + databaseError.getMessage());
+                Toast.makeText(LoginActivity.this, "Login failed: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void loginFailed() {
-        Toast.makeText(LoginActivity.this, "Invalid email/phone or password", Toast.LENGTH_SHORT).show();
+    private void loginFailed(Exception exception) {
+        String errorMessage = (exception != null) ? exception.getMessage() : "Invalid email/phone or password";
+        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 }

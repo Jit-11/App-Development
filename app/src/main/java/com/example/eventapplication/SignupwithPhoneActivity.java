@@ -16,6 +16,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,6 +30,7 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
     private boolean isPasswordVisible = false;
     private boolean isConfirmPasswordVisible = false;
     private DatabaseReference databaseReference;
+    private FirebaseAuth auth;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -36,7 +39,7 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signupwith_phone);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-
+        auth = FirebaseAuth.getInstance();
 
         nameInput = findViewById(R.id.usernameInput);
         phoneNumberInput = findViewById(R.id.phoneNumberInput);
@@ -119,15 +122,28 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
             return;
         }
 
-        HelperClass user = new HelperClass("", name, password, phoneNumber);
-        String userId = databaseReference.push().getKey();
-        databaseReference.child(userId).setValue(user)
+        // Use Firebase Authentication to create a new user
+        auth.createUserWithEmailAndPassword(phoneNumber + "", password) // Using phone number as email
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(SignupwithPhoneActivity.this, DashboardActivity.class);
-                        startActivity(intent);
+                        FirebaseUser firebaseUser = auth.getCurrentUser(); // Get the user
+                        String userId = firebaseUser.getUid(); // Get user ID
+
+                        // Save additional user data to Firebase Database
+                        HelperClass user = new HelperClass("", name, password, phoneNumber, "");
+                        databaseReference.child(userId).setValue(user)
+                                .addOnCompleteListener(dbTask -> {
+                                    if (dbTask.isSuccessful()) {
+                                        Toast.makeText(this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(SignupwithPhoneActivity.this, DashboardActivity.class);
+                                        startActivity(intent);
+                                        finish(); // Close the signup activity
+                                    } else {
+                                        Toast.makeText(this, "Failed to save user data: " + dbTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     } else {
+                        // Handle errors
                         Toast.makeText(this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
