@@ -1,8 +1,6 @@
 package com.example.eventapplication;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -11,28 +9,18 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,8 +39,8 @@ import java.io.IOException;
 public class ProfileActivity extends AppCompatActivity {
 
     ImageView backbtn;
+    Button changePassword,  logout,editprofile;
     Intent intent;
-    private static final String PROFILE_IMAGE_PATH = "profile_images/"; // Firebase path
     private static final int CAMERA_PERMISSION_REQUEST = 101;
 
     private FirebaseUser currentUser;
@@ -61,7 +49,6 @@ public class ProfileActivity extends AppCompatActivity {
     private ShapeableImageView profileImageView;
     private boolean isProfileImageSet = false;
 
-    // Firebase Storage reference
     private StorageReference storageReference;
 
     @Override
@@ -69,21 +56,61 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        backbtn= (ImageView) findViewById(R.id.backButton);
+        backbtn = findViewById(R.id.backButton);
+        changePassword = findViewById(R.id.btnChangePassword);
         profileImageView = findViewById(R.id.profileImage);
-
+        logout = findViewById(R.id.btnLogout);
+        editprofile=(Button)findViewById(R.id.btnEditProfile);
         // Initialize Firebase Storage
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Check if the user is logged in
+        if (currentUser == null) {
+            // If no user is logged in, redirect to LoginActivity
+            Intent loginIntent = new Intent(ProfileActivity.this, SignupActivity.class);
+            startActivity(loginIntent);
+            finish(); // Close the current activity
+            return;
+        }
+
+
+
         userDatabaseRef = FirebaseDatabase.getInstance().getReference("Users").child(currentUser.getUid());
         storageReference = FirebaseStorage.getInstance().getReference("profile_images/").child(currentUser.getUid() + ".png");
 
         // Load the profile image from Firebase Storage
         loadProfileImage();
 
-        backbtn.setOnClickListener(new View.OnClickListener() {
+        backbtn.setOnClickListener(view -> {
+            intent = new Intent(ProfileActivity.this, DashboardActivity.class);
+            startActivity(intent);
+        });
+
+
+        changePassword.setOnClickListener(view -> {
+            intent = new Intent(ProfileActivity.this, changePassword.class);
+            startActivity(intent);
+        });
+
+        logout.setOnClickListener(view -> {
+            new AlertDialog.Builder(ProfileActivity.this)
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to logout?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(ProfileActivity.this, DashboardActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish(); // Close the current activity
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+
+        editprofile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intent=new Intent(ProfileActivity.this, DashboardActivity.class);
+                intent = new Intent(ProfileActivity.this, editProfile.class);
                 startActivity(intent);
             }
         });
@@ -125,18 +152,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(ProfileActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    // Load the profile image from Firebase Storage
-    /*private void loadProfileImage() {
-        StorageReference profileRef = storageReference.child(PROFILE_IMAGE_PATH);
-        profileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-            Glide.with(ProfileActivity.this)
-                    .load(uri)
-                    .placeholder(R.drawable.profile) // Placeholder while loading
-                    .into(profileImageView);
-            isProfileImageSet = true;
-        }).addOnFailureListener(e ->
-                Toast.makeText(ProfileActivity.this, "Failed to load profile photo", Toast.LENGTH_SHORT).show());
-    }*/
+    // Load the profile image from Firebase Realtime Database
     private void loadProfileImage() {
         userDatabaseRef.child("profileImageUrl").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -204,7 +220,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     // Remove profile image from Firebase Storage
     private void removeProfileImage() {
-        StorageReference profileRef = storageReference.child(PROFILE_IMAGE_PATH);
+        StorageReference profileRef = storageReference.child(currentUser.getUid() + ".png");
         profileRef.delete().addOnSuccessListener(aVoid -> {
             profileImageView.setImageResource(R.drawable.profile);
             isProfileImageSet = false;

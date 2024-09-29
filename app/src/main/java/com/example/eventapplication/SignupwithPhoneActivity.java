@@ -10,21 +10,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-
 public class SignupwithPhoneActivity extends AppCompatActivity {
 
-    private EditText nameInput, phoneNumberInput, emailInput, passwordInput, confirmPasswordInput;
+    private EditText nameInput, phoneNumberInput, passwordInput, confirmPasswordInput;
     private ImageView passwordToggle, confirmPasswordToggle;
     private Button signupButton;
     private boolean isPasswordVisible = false;
@@ -49,14 +44,12 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
         confirmPasswordToggle = findViewById(R.id.confirmPasswordToggle);
         signupButton = findViewById(R.id.signupButton);
 
-
         passwordToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 togglePasswordVisibility();
             }
         });
-
 
         confirmPasswordToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +58,6 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
             }
         });
 
-
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +65,6 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void togglePasswordVisibility() {
         if (isPasswordVisible) {
@@ -87,7 +78,6 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
         isPasswordVisible = !isPasswordVisible;
     }
 
-
     private void toggleConfirmPasswordVisibility() {
         if (isConfirmPasswordVisible) {
             confirmPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -100,7 +90,6 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
         isConfirmPasswordVisible = !isConfirmPasswordVisible;
     }
 
-
     private void performSignUp() {
         String name = nameInput.getText().toString().trim();
         String phoneNumber = phoneNumberInput.getText().toString().trim();
@@ -112,8 +101,9 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
             return;
         }
 
-        if (!phoneNumber.matches("\\d{10}")) {
-            Toast.makeText(this, "Phone number must be exactly 10 digits", Toast.LENGTH_SHORT).show();
+        // Ensure the phone number starts with Indian country code or valid starting digits
+        if (!phoneNumber.matches("^((\\+91)?[789]\\d{9})$")) {
+            Toast.makeText(this, "Phone number must be an Indian number and exactly 10 digits", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -123,11 +113,11 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
         }
 
         // Use Firebase Authentication to create a new user
-        auth.createUserWithEmailAndPassword(phoneNumber + "", password) // Using phone number as email
+        auth.createUserWithEmailAndPassword(phoneNumber + "@phone.com", password) // Using phone number as pseudo email
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser firebaseUser = auth.getCurrentUser(); // Get the user
-                        String userId = firebaseUser.getUid(); // Get user ID
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
+                        String userId = firebaseUser.getUid();
 
                         // Save additional user data to Firebase Database
                         HelperClass user = new HelperClass("", name, password, phoneNumber, "");
@@ -143,7 +133,6 @@ public class SignupwithPhoneActivity extends AppCompatActivity {
                                     }
                                 });
                     } else {
-                        // Handle errors
                         Toast.makeText(this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
