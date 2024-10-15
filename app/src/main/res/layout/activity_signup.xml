@@ -14,15 +14,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center"
         android:paddingTop="48dp">
 
         <ImageView
             android:id="@+id/logo"
             android:layout_width="wrap_content"
-            android:layout_height="120dp"
+            android:layout_height="144dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="192dp"
             android:contentDescription="App Logo"
             android:src="@drawable/app_logo" />
 
@@ -30,45 +29,60 @@
             android:id="@+id/signup_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
             android:text="Sign up"
-            android:layout_gravity="center"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/continue_with_phone"
-            android:layout_width="240dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:backgroundTint="@color/black"
-            android:padding="12dp"
-            android:layout_gravity="center"
-            android:drawableLeft="@drawable/phone"
-            android:background="@drawable/button_background"
-            android:text="Continue with Phone number"
-            android:textColor="@android:color/white" />
-
-        <Button
+        <EditText
             android:id="@+id/continue_with_email"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
             android:padding="12dp"
             android:drawableLeft="@drawable/email"
-            android:text="Continue with Email"
-            android:background="@drawable/button_background"
+            android:drawablePadding="16dp"
+            android:hint="Continue with Email"
+            android:textColorHint="@color/white"
+            android:background="@drawable/edittext_background"
             android:textColor="@android:color/white" />
+
+        <LinearLayout
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:textAlignment="@+id/signup_text">
+
+            <TextView
+                android:id="@+id/next_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Next"
+                android:paddingLeft="8dp"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/next_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Next Arrow"
+                android:paddingLeft="8dp"
+                android:src="@drawable/forward"
+                app:tint="@color/white" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/login_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="24dp"
             android:text="Already have an account? Log in"
             android:textColor="@color/white"
             android:textSize="16sp" />

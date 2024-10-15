@@ -2,12 +2,14 @@ package com.example.eventapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,9 +26,11 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText emailUsernameInput, passwordInput;
+    private EditText emailUsernameInput, loginpasswordInput;
     private Button loginButton;
     private TextView forgotPassword;
+    private ImageView loginpasswordToggle;
+    private boolean isPasswordVisible = false;
 
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
@@ -37,12 +41,20 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         emailUsernameInput = findViewById(R.id.editTextEmailUsername);
-        passwordInput = findViewById(R.id.editTextPassword);
+        loginpasswordInput = findViewById(R.id.loginPasswordInput);
+        loginpasswordToggle = findViewById(R.id.loginPasswordToggle);
         loginButton = findViewById(R.id.loginButton);
         forgotPassword = findViewById(R.id.forgot_password);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
         auth = FirebaseAuth.getInstance();
+
+        loginpasswordToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                togglePasswordVisibility();
+            }
+        });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,114 +72,90 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void verifyLogin() {
-        String input = emailUsernameInput.getText().toString().trim();
-        String enteredPassword = passwordInput.getText().toString().trim();
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            loginpasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            loginpasswordToggle.setImageResource(R.drawable.visibility);
+        } else {
+            loginpasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            loginpasswordToggle.setImageResource(R.drawable.visibility_off);
+        }
+        loginpasswordInput.setSelection(loginpasswordInput.getText().length()); // Move cursor to the end
+        isPasswordVisible = !isPasswordVisible;
+    }
 
-        if (TextUtils.isEmpty(input) || TextUtils.isEmpty(enteredPassword)) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+    private void verifyLogin() {
+        String usernameOrEmail = emailUsernameInput.getText().toString().trim();
+        String password = loginpasswordInput.getText().toString().trim();
+        loginpasswordInput = findViewById(R.id.loginPasswordInput);
+        loginpasswordToggle = findViewById(R.id.loginPasswordToggle);
+
+        // Validate input fields
+        if (TextUtils.isEmpty(usernameOrEmail)) {
+            Toast.makeText(this, "Please enter email or username", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
-            loginWithEmail(input, enteredPassword);
-        } else if (Patterns.PHONE.matcher(input).matches()) {
-            loginWithPhoneNumber(input, enteredPassword);
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check if the input is an email or a username
+        if (Patterns.EMAIL_ADDRESS.matcher(usernameOrEmail).matches()) {
+            // Input is an email
+            loginWithEmail(usernameOrEmail, password);
         } else {
-            Toast.makeText(this, "Please enter a valid email or phone number", Toast.LENGTH_SHORT).show();
+            // Input is a username, so we need to find the email associated with this username
+            findEmailByUsername(usernameOrEmail, password);
         }
     }
 
     private void loginWithEmail(String email, String password) {
-        // Check if the user is already logged in
-        if (auth.getCurrentUser() != null) {
-            Toast.makeText(this, "Already logged in", Toast.LENGTH_SHORT).show();
-            navigateToDashboard();
-            return;
-        }
-
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        // Login success
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
-                            checkUserInDatabase(user.getUid());
+                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                            startActivity(intent);
+                            finish(); // Close the login activity
                         }
                     } else {
-                        loginFailed(task.getException());
+                        // Login failed
+                        Toast.makeText(LoginActivity.this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void loginWithPhoneNumber(String phoneNumber, String password) {
-        // Check if the user is already logged in
-        if (auth.getCurrentUser() != null) {
-            Toast.makeText(this, "Already logged in", Toast.LENGTH_SHORT).show();
-            navigateToDashboard();
-            return;
-        }
-
-        databaseReference.orderByChild("phoneNumber").equalTo(phoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                        String userId = userSnapshot.getKey();
-                        String email = userSnapshot.child("email").getValue(String.class);
-
-                        if (email != null) {
-                            auth.signInWithEmailAndPassword(email, password)
-                                    .addOnCompleteListener(signInTask -> {
-                                        if (signInTask.isSuccessful()) {
-                                            checkUserInDatabase(userId);
-                                        } else {
-                                            loginFailed(signInTask.getException());
-                                        }
-                                    });
+    // Method to find email by username
+    private void findEmailByUsername(String username, String password) {
+        databaseReference.orderByChild("name").equalTo(username)
+                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            // Assuming username is unique, get the first match
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                HelperClass user = snapshot.getValue(HelperClass.class);
+                                if (user != null) {
+                                    String email = user.getEmail();
+                                    // Now we have the email, proceed to login
+                                    loginWithEmail(email, password);
+                                    break;
+                                }
+                            }
                         } else {
-                            loginFailed(new Exception("Email not found for the phone number"));
+                            Toast.makeText(LoginActivity.this, "Username not found", Toast.LENGTH_SHORT).show();
                         }
                     }
-                } else {
-                    Toast.makeText(LoginActivity.this, "Phone number not registered", Toast.LENGTH_SHORT).show();
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("LoginActivity", "Database error: " + databaseError.getMessage());
-            }
-        });
-    }
-
-    private void checkUserInDatabase(String userId) {
-        databaseReference.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                    navigateToDashboard();
-                } else {
-                    loginFailed(new Exception("User data not found"));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("LoginActivity", "Database error: " + databaseError.getMessage());
-                Toast.makeText(LoginActivity.this, "Login failed: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void navigateToDashboard() {
-        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private void loginFailed(Exception exception) {
-        String errorMessage = (exception != null) ? exception.getMessage() : "Invalid email/phone or password";
-        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(LoginActivity.this, "Database Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

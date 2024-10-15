@@ -2,9 +2,11 @@ package com.example.eventapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,10 +20,13 @@ import com.google.firebase.database.FirebaseDatabase;
 public class changePassword extends AppCompatActivity {
     private Button change;
     private EditText user, currentPassword, newPass, confirmPass;
+    private ImageView loginPasswordToggle, newPasswordToggle, confirmPasswordToggle;
     private FirebaseAuth mAuth;
     private DatabaseReference databaseReference;
     private Intent intent;
-
+    private boolean isCurPasswordVisible = false;
+    private boolean isNewPasswordVisible = false;
+    private boolean isConfirmPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +38,48 @@ public class changePassword extends AppCompatActivity {
         currentPassword = findViewById(R.id.curPassword);
         newPass = findViewById(R.id.newPassword);
         confirmPass = findViewById(R.id.confirmPassword);
+        loginPasswordToggle = findViewById(R.id.loginPasswordToggle);
+        newPasswordToggle = findViewById(R.id.newPasswordToggle);
+        confirmPasswordToggle = findViewById(R.id.confirmPasswordToggle);
+
+        setupPasswordToggle(currentPassword, loginPasswordToggle, "cur");
+        setupPasswordToggle(newPass, newPasswordToggle, "new");
+        setupPasswordToggle(confirmPass, confirmPasswordToggle, "confirm");
 
         mAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");  // Reference to your users in Firebase
 
         change.setOnClickListener(v -> changePassword());
+    }
+
+    private void setupPasswordToggle(EditText passwordField, ImageView toggleButton, String passwordType) {
+        toggleButton.setOnClickListener(v -> {
+            switch (passwordType) {
+                case "cur":
+                    isCurPasswordVisible = !isCurPasswordVisible;
+                    togglePasswordVisibility(passwordField, toggleButton, isCurPasswordVisible);
+                    break;
+                case "new":
+                    isNewPasswordVisible = !isNewPasswordVisible;
+                    togglePasswordVisibility(passwordField, toggleButton, isNewPasswordVisible);
+                    break;
+                case "confirm":
+                    isConfirmPasswordVisible = !isConfirmPasswordVisible;
+                    togglePasswordVisibility(passwordField, toggleButton, isConfirmPasswordVisible);
+                    break;
+            }
+        });
+    }
+
+    private void togglePasswordVisibility(EditText passwordField, ImageView toggleButton, boolean isVisible) {
+        if (isVisible) {
+            passwordField.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            toggleButton.setImageResource(R.drawable.visibility_off);  // Use an icon for visibility off
+        } else {
+            passwordField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            toggleButton.setImageResource(R.drawable.visibility);  // Use an icon for visibility on
+        }
+        passwordField.setSelection(passwordField.getText().length());
     }
 
     private void changePassword() {

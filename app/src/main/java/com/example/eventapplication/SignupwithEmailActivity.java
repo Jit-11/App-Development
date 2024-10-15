@@ -76,10 +76,10 @@ public class SignupwithEmailActivity extends AppCompatActivity {
     private void togglePasswordVisibility() {
         if (isPasswordVisible) {
             passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            passwordToggle.setImageResource(R.drawable.visibility_off);
+            passwordToggle.setImageResource(R.drawable.visibility);
         } else {
             passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            passwordToggle.setImageResource(R.drawable.visibility);
+            passwordToggle.setImageResource(R.drawable.visibility_off);
         }
         passwordInput.setSelection(passwordInput.getText().length()); // Move cursor to the end
         isPasswordVisible = !isPasswordVisible;
@@ -89,10 +89,10 @@ public class SignupwithEmailActivity extends AppCompatActivity {
     private void toggleConfirmPasswordVisibility() {
         if (isConfirmPasswordVisible) {
             confirmPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            confirmPasswordToggle.setImageResource(R.drawable.visibility_off);
+            confirmPasswordToggle.setImageResource(R.drawable.visibility);
         } else {
             confirmPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            confirmPasswordToggle.setImageResource(R.drawable.visibility);
+            confirmPasswordToggle.setImageResource(R.drawable.visibility_off);
         }
         confirmPasswordInput.setSelection(confirmPasswordInput.getText().length()); // Move cursor to the end
         isConfirmPasswordVisible = !isConfirmPasswordVisible;
@@ -129,7 +129,7 @@ public class SignupwithEmailActivity extends AppCompatActivity {
                         String userId = firebaseUser.getUid(); // Get user ID
 
                         // Save additional user data to Firebase Database
-                        HelperClass user = new HelperClass(email, name, password, "", "");
+                        HelperClass user = new HelperClass(email, name, password, "");
                         databaseReference.child(userId).setValue(user)
                                 .addOnCompleteListener(dbTask -> {
                                     if (dbTask.isSuccessful()) {

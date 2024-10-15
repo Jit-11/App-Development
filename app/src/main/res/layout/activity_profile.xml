@@ -142,10 +142,10 @@
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#37403F"
             android:text="Log Out"
             android:textColor="@color/white"
             android:layout_gravity="center"
-            android:background="@drawable/btn_background"
             android:layout_marginTop="24dp"/>
     </LinearLayout>
 

@@ -18,7 +18,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private EditText searchBar;
     private LinearLayout btnHome,btnLiveEvent, btnSettings;;
-    private ImageView profileIcon, menuIcon;
+    private ImageView notificationIcon, menuIcon;
     Intent intent;
 
     @SuppressLint("MissingInflatedId")
@@ -32,7 +32,7 @@ public class DashboardActivity extends AppCompatActivity {
         //btnHome = findViewById(R.id.textHome);
         btnLiveEvent = findViewById(R.id.btnLiveEventLayout);
         btnSettings = findViewById(R.id.btnSettings);
-        profileIcon = findViewById(R.id.profileIcon);
+        notificationIcon = findViewById(R.id.notificationIcon);
 
         // Handle search functionality
         searchBar.setOnClickListener(new View.OnClickListener() {
@@ -68,11 +68,11 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         // Profile icon functionality
-        profileIcon.setOnClickListener(new View.OnClickListener() {
+        notificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Navigate to Profile activity
-                Intent intent = new Intent(DashboardActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, NotificationActivity.class);
                 startActivity(intent);
             }
         });

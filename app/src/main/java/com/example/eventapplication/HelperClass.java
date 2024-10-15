@@ -2,17 +2,16 @@ package com.example.eventapplication;
 
 public class HelperClass {
 
-    String name,email,phoneNumber,password;
+    String name,email,password;
     private String profileImageUrl;
 
     public HelperClass() {
     }
 
-    public HelperClass(String email, String name, String password, String phoneNumber ,String profileImageUrl) {
+    public HelperClass(String email, String name, String password , String profileImageUrl) {
         this.email = email;
         this.name = name;
         this.password = password;
-        this.phoneNumber = phoneNumber;
         this.profileImageUrl = profileImageUrl;
     }
 
@@ -38,14 +37,6 @@ public class HelperClass {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public String getProfileImageUrl() {

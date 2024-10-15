@@ -82,10 +82,8 @@ public class ProfileActivity extends AppCompatActivity {
         loadProfileImage();
 
         backbtn.setOnClickListener(view -> {
-            intent = new Intent(ProfileActivity.this, DashboardActivity.class);
-            startActivity(intent);
+            finish();
         });
-
 
         changePassword.setOnClickListener(view -> {
             intent = new Intent(ProfileActivity.this, changePassword.class);
@@ -98,7 +96,7 @@ public class ProfileActivity extends AppCompatActivity {
                     .setMessage("Are you sure you want to logout?")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         FirebaseAuth.getInstance().signOut();
-                        Intent intent = new Intent(ProfileActivity.this, DashboardActivity.class);
+                        Intent intent = new Intent(ProfileActivity.this, SignupActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish(); // Close the current activity
