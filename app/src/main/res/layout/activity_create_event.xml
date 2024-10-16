@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black"
+    android:padding="16dp"
+    tools:context=".CreateEventActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Event"
+        android:textSize="24sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/eventNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Event Name"
+        android:textColor="@android:color/white"
+        android:background="@drawable/edittext_background"
+        android:backgroundTint="@android:color/white"
+        android:padding="12dp"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/ticketPriceEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ticket Price"
+        android:textColor="@android:color/white"
+        android:background="@drawable/edittext_background"
+        android:backgroundTint="@android:color/white"
+        android:inputType="numberDecimal"
+        android:padding="12dp"
+        android:layout_marginTop="16dp" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Event Date"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="16dp" />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/edittext_background"
+        android:layout_marginTop="16dp">
+
+        <ImageView
+            android:id="@+id/selectDateImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/calender"
+            android:padding="12dp"
+            android:contentDescription="Select Date"/>
+        <TextView
+            android:id="@+id/selectDateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Select date"
+            android:textColor="@android:color/white"
+            android:padding="12dp"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/venueSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/spinner_border"
+        android:spinnerMode="dropdown"/>
+
+    <Button
+        android:id="@+id/createEventButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Create Event"
+        android:layout_gravity="center"
+        android:backgroundTint="#37403F"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.example.eventapplication;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -16,7 +17,9 @@ import com.google.firebase.auth.FirebaseAuth;
 public class Organizer extends AppCompatActivity {
 
     private FirebaseAuth auth;
-
+    Button logoutButton,createEvent;
+    Intent intent;
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,8 +28,15 @@ public class Organizer extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        // Set up the logout button
-        Button logoutButton = findViewById(R.id.logoutButton);
+        logoutButton=findViewById(R.id.logoutButton);
+        createEvent=findViewById(R.id.createEventButton);
+        createEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                intent=new Intent(Organizer.this,CreateEventActivity.class);
+                startActivity(intent);
+            }
+        });
         logoutButton.setOnClickListener(v -> logout());
 
     }
