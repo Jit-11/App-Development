@@ -56,6 +56,37 @@
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/darker_gray" />
 
+    <!-- Role Selection using Radio Buttons -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Select Role"
+        android:textColor="@android:color/white" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupRole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <RadioButton
+            android:id="@+id/radioOrganizer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Organizer"
+            android:textColor="@android:color/white" />
+
+        <RadioButton
+            android:id="@+id/radioParticipant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Participant"
+            android:textColor="@android:color/white" />
+    </RadioGroup>
+
     <!-- Password Input with Toggle Visibility -->
     <RelativeLayout
         android:layout_width="match_parent"

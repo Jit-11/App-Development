@@ -26,6 +26,9 @@
         android:theme="@style/Theme.EventApplication"
         tools:targetApi="31">
         <activity
+            android:name=".Organizer"
+            android:exported="false" />
+        <activity
             android:name=".NotificationActivity"
             android:exported="false" />
         <activity

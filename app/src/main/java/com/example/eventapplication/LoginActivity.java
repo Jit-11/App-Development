@@ -49,26 +49,12 @@ public class LoginActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
         auth = FirebaseAuth.getInstance();
 
-        loginpasswordToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                togglePasswordVisibility();
-            }
-        });
+        loginpasswordToggle.setOnClickListener(v -> togglePasswordVisibility());
+        loginButton.setOnClickListener(v -> verifyLogin());
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                verifyLogin();
-            }
-        });
-
-        forgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
-                startActivity(intent);
-            }
+        forgotPassword.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -80,17 +66,14 @@ public class LoginActivity extends AppCompatActivity {
             loginpasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             loginpasswordToggle.setImageResource(R.drawable.visibility_off);
         }
-        loginpasswordInput.setSelection(loginpasswordInput.getText().length()); // Move cursor to the end
+        loginpasswordInput.setSelection(loginpasswordInput.getText().length());
         isPasswordVisible = !isPasswordVisible;
     }
 
     private void verifyLogin() {
         String usernameOrEmail = emailUsernameInput.getText().toString().trim();
         String password = loginpasswordInput.getText().toString().trim();
-        loginpasswordInput = findViewById(R.id.loginPasswordInput);
-        loginpasswordToggle = findViewById(R.id.loginPasswordToggle);
 
-        // Validate input fields
         if (TextUtils.isEmpty(usernameOrEmail)) {
             Toast.makeText(this, "Please enter email or username", Toast.LENGTH_SHORT).show();
             return;
@@ -101,12 +84,11 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if the input is an email or a username
         if (Patterns.EMAIL_ADDRESS.matcher(usernameOrEmail).matches()) {
             // Input is an email
             loginWithEmail(usernameOrEmail, password);
         } else {
-            // Input is a username, so we need to find the email associated with this username
+            // Input is a username, find the email associated with this username
             findEmailByUsername(usernameOrEmail, password);
         }
     }
@@ -115,47 +97,98 @@ public class LoginActivity extends AppCompatActivity {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Login success
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
-                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                            startActivity(intent);
-                            finish(); // Close the login activity
+                            // Check the user's role in the database
+                            databaseReference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        HelperClass userData = dataSnapshot.getValue(HelperClass.class);
+                                        if (userData != null) {
+                                            String role = userData.getRole();
+                                            Log.d("LoginActivity", "User role: " + role);
+                                            // Validate credentials and navigate based on role
+                                            validateUserCredentials(email, password, role);
+                                        } else {
+                                            showError("User data is null.");
+                                        }
+                                    } else {
+                                        showError("User data not found.");
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.e("LoginActivity", "Database Error: " + databaseError.getMessage());
+                                    showError("Database Error: " + databaseError.getMessage());
+                                }
+                            });
                         }
                     } else {
-                        // Login failed
-                        Toast.makeText(LoginActivity.this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("LoginActivity", "Login Failed: " + task.getException().getMessage());
+                        showError("Login Failed: " + task.getException().getMessage());
                     }
                 });
     }
 
-    // Method to find email by username
     private void findEmailByUsername(String username, String password) {
         databaseReference.orderByChild("name").equalTo(username)
-                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
-                            // Assuming username is unique, get the first match
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 HelperClass user = snapshot.getValue(HelperClass.class);
                                 if (user != null) {
                                     String email = user.getEmail();
-                                    // Now we have the email, proceed to login
-                                    loginWithEmail(email, password);
+                                    String role = user.getRole();
+                                    // Check credentials and navigate based on role
+                                    validateUserCredentials(email, password, role);
                                     break;
                                 }
                             }
                         } else {
-                            Toast.makeText(LoginActivity.this, "Username not found", Toast.LENGTH_SHORT).show();
+                            showError("Username not found.");
                         }
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(LoginActivity.this, "Database Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("LoginActivity", "Database Error: " + databaseError.getMessage());
+                        showError("Database Error: " + databaseError.getMessage());
                     }
                 });
+    }
+
+    private void validateUserCredentials(String email, String password, String role) {
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Navigate based on role
+                        navigateToRoleBasedActivity(role);
+                    } else {
+                        Log.e("LoginActivity", "Login Failed: " + task.getException().getMessage());
+                        showError("Login Failed: " + task.getException().getMessage());
+                    }
+                });
+    }
+
+    private void navigateToRoleBasedActivity(String role) {
+        Intent intent;
+        if (role.equals("Organizer")) { // Case-sensitive check
+            intent = new Intent(LoginActivity.this, Organizer.class);
+        } else if (role.equals("Participant")) { // Case-sensitive check
+            intent = new Intent(LoginActivity.this, DashboardActivity.class);
+        } else {
+            showError("Role not recognized.");
+            return;
+        }
+        startActivity(intent);
+        finish(); // Close the login activity
+    }
+
+    private void showError(String message) {
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 }

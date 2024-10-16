@@ -43,21 +43,6 @@
         android:layout_marginTop="16dp"
         android:layout_gravity="start" />
 
-    <!-- Password Input -->
-    <!--<EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Password"
-        android:inputType="textPassword"
-        android:textColor="@color/white"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/edittext_background"
-        android:padding="10dp" />
--->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -85,7 +70,6 @@
             android:layout_marginEnd="16dp"
             android:contentDescription="Toggle Confirm Password Visibility" />
     </RelativeLayout>
-
 
     <!-- Login Button -->
     <Button

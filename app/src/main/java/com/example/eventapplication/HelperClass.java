@@ -2,17 +2,19 @@ package com.example.eventapplication;
 
 public class HelperClass {
 
-    String name,email,password;
+    String name, email, password;
     private String profileImageUrl;
+    private String role;  // New field to specify if the user is a participant or an organizer
 
     public HelperClass() {
     }
 
-    public HelperClass(String email, String name, String password , String profileImageUrl) {
+    public HelperClass(String email, String name, String password, String profileImageUrl, String role) {
         this.email = email;
         this.name = name;
         this.password = password;
         this.profileImageUrl = profileImageUrl;
+        this.role = role;
     }
 
     public String getEmail() {
@@ -47,4 +49,11 @@ public class HelperClass {
         this.profileImageUrl = profileImageUrl;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">EventApplication</string>
+    <string-array name="user_roles">
+        <item>Participant</item>
+        <item>Organizer</item>
+    </string-array>
 </resources>
