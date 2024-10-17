@@ -1,7 +1,32 @@
 package com.example.eventapplication;
 
 public class Event {
-    private String eventId;
+    private String date;
+    private String name;
+    private String imageUrl; // Assuming this will be added later or is not in the provided structure.
+
+    // Default constructor required for calls to DataSnapshot.getValue(Event.class)
+    public Event() {
+    }
+
+    public Event(String date, String name, String imageUrl) {
+        this.date = date;
+        this.name = name;
+        this.imageUrl = imageUrl;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    /*private String eventId;
     private String eventName;
     private String eventDate;
     private String eventVenue;
@@ -67,5 +92,5 @@ public class Event {
 
     public void setOrganizerId(String organizerId) {
         this.organizerId = organizerId;
-    }
+    }*/
 }
