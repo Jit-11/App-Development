@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_create_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Event"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="12dp"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"
+        android:layout_marginBottom="8dp"
+        android:shape="oval" />
+
+    <TextView
+        android:id="@+id/tv_update_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update Event"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="12dp"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"
+        android:layout_marginBottom="8dp"
+        android:shape="oval" />
+
+    <TextView
+        android:id="@+id/tv_cancel_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="12dp"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"
+        android:layout_marginBottom="8dp"
+        android:shape="oval" />
+</LinearLayout>

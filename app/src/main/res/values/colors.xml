@@ -3,4 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="your_status_bar_color">#000000</color>
+    <color name="design_color">#FF5722</color> <!-- Example color for your floating button -->
+    <color name="gray">#808080</color>
 </resources>
