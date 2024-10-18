@@ -117,7 +117,7 @@ public class DashboardActivity extends AppCompatActivity {
         LinearLayout eventCard = new LinearLayout(this);
         eventCard.setOrientation(LinearLayout.HORIZONTAL);
         eventCard.setBackgroundResource(R.drawable.event_card_background);
-        eventCard.setPadding(24, 8, 24, 8);
+        eventCard.setPadding(24, 16, 24, 16);
 
         // Create layout parameters for the event card and set margin
         LinearLayout.LayoutParams cardLayoutParams = new LinearLayout.LayoutParams(
@@ -134,7 +134,8 @@ public class DashboardActivity extends AppCompatActivity {
         } else {
             eventImage.setImageResource(R.drawable.sample_event_image); // Add your default image drawable
         }
-        eventImage.setLayoutParams(new LinearLayout.LayoutParams(240, 240));
+        eventImage.setLayoutParams(new LinearLayout.LayoutParams(240, 224));
+        eventImage.setPadding(0,16,0,16);
 
         // Add event name and date
         LinearLayout textLayout = new LinearLayout(this);

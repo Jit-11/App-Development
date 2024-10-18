@@ -85,6 +85,24 @@
         android:background="@drawable/spinner_border"
         android:spinnerMode="dropdown"/>
 
+    <ImageView
+        android:id="@+id/eventImageView"
+        android:layout_width="160dp"
+        android:layout_height="96dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/add_a_photo" />
+
+    <Button
+        android:id="@+id/selectImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Select Image"
+        android:layout_gravity="center"
+        android:backgroundTint="#37403F"
+        android:textColor="@android:color/white" />
+
     <Button
         android:id="@+id/createEventButton"
         android:layout_width="wrap_content"

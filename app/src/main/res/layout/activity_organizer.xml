@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Organizer"
-    android:background="@android:color/white">
+    android:background="@android:color/black">
 
     <!-- Search Bar -->
 
@@ -16,7 +16,7 @@
         android:layout_marginStart="72dp"
         android:layout_marginTop="76dp"
         android:text="Find the trending events"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,8 +44,8 @@
             android:background="@android:color/transparent"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="10dp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/gray" />
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
     </androidx.cardview.widget.CardView>
 
     <!-- RecyclerView to display popular events -->
