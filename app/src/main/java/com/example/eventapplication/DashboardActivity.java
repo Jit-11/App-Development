@@ -10,14 +10,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.view.LayoutInflater;
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,10 +22,9 @@ import com.google.firebase.database.ValueEventListener;
 public class DashboardActivity extends AppCompatActivity {
 
     private EditText searchBar;
-    private LinearLayout btnHome,btnLiveEvent, btnSettings;;
-    private ImageView notificationIcon, menuIcon;
+    private LinearLayout btnHome, btnLiveEvent, btnSettings;
+    private ImageView notificationIcon;
     Intent intent;
-    private LinearLayout featuredEventsLayout;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -39,9 +32,8 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        btnHome=(LinearLayout)findViewById(R.id.btnHome);
+        btnHome = findViewById(R.id.btnHome);
         searchBar = findViewById(R.id.searchBar);
-        //btnHome = findViewById(R.id.textHome);
         btnLiveEvent = findViewById(R.id.btnLiveEventLayout);
         btnSettings = findViewById(R.id.btnSettings);
         notificationIcon = findViewById(R.id.notificationIcon);
@@ -51,7 +43,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String query = searchBar.getText().toString();
-                // Perform search logic
+                // Perform search logic (not implemented)
             }
         });
 
@@ -73,21 +65,21 @@ public class DashboardActivity extends AppCompatActivity {
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Filter events by "Near You"
-                intent=new Intent(DashboardActivity.this,ProfileActivity.class);
+                intent = new Intent(DashboardActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
 
-        // Profile icon functionality
+        // Notification icon functionality
         notificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate to Profile activity
                 Intent intent = new Intent(DashboardActivity.this, NotificationActivity.class);
                 startActivity(intent);
             }
         });
+
+        // Fetch events from Firebase
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("events");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -113,7 +105,8 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
-    private void addEventCard(Event event) {
+    // Method to create event cards dynamically and handle click events
+    private void addEventCard(final Event event) {
         LinearLayout eventCard = new LinearLayout(this);
         eventCard.setOrientation(LinearLayout.HORIZONTAL);
         eventCard.setBackgroundResource(R.drawable.event_card_background);
@@ -124,18 +117,18 @@ public class DashboardActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        cardLayoutParams.setMargins(0, 0, 40, 0); // Set bottom margin (16dp)
+        cardLayoutParams.setMargins(0, 0, 40, 0); // Set bottom margin
 
         // Add event image
         ImageView eventImage = new ImageView(this);
-        String imageUrl = event.getImageUrl(); // Ensure this is populated correctly
+        String imageUrl = event.getImageUrl();
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(this).load(imageUrl).into(eventImage);
         } else {
-            eventImage.setImageResource(R.drawable.sample_event_image); // Add your default image drawable
+            eventImage.setImageResource(R.drawable.sample_event_image); // Default image
         }
         eventImage.setLayoutParams(new LinearLayout.LayoutParams(240, 224));
-        eventImage.setPadding(0,16,0,16);
+        eventImage.setPadding(0, 16, 0, 16);
 
         // Add event name and date
         LinearLayout textLayout = new LinearLayout(this);
@@ -144,13 +137,13 @@ public class DashboardActivity extends AppCompatActivity {
         TextView eventName = new TextView(this);
         eventName.setText(event.getName());
         eventName.setTextColor(Color.WHITE);
-        eventName.setPadding(24,32,8,8);
+        eventName.setPadding(24, 32, 8, 8);
         eventName.setTextSize(20);
 
         TextView eventDate = new TextView(this);
         eventDate.setText("Date: " + event.getDate());
         eventDate.setTextColor(Color.WHITE);
-        eventDate.setPadding(24,0,0,0);
+        eventDate.setPadding(24, 0, 0, 0);
         eventDate.setTextSize(14);
 
         textLayout.addView(eventName);
@@ -167,5 +160,16 @@ public class DashboardActivity extends AppCompatActivity {
         LinearLayout eventContainer = findViewById(R.id.eventContainer); // Ensure this ID matches the XML
         eventContainer.addView(eventCard);
 
+        // Add click listener to the event card to open ShowDetailActivity
+        eventCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DashboardActivity.this, showDetail.class);
+                intent.putExtra("eventName", event.getName());
+                intent.putExtra("eventDate", event.getDate());
+                intent.putExtra("eventImageUrl", event.getImageUrl());
+                startActivity(intent);
+            }
+        });
     }
 }

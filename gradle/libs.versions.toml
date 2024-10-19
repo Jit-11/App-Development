@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.1"
 compilerVersion = "4.14.2"
+core = "3.3.0"
 firebaseAuth = "23.0.0"
 firebaseAuthVersion = "21.0.1"
 firebaseDatabaseVersion = "20.3.0"
@@ -19,11 +20,13 @@ constraintlayout = "2.1.4"
 firebaseDatabase = "21.0.0"
 playServicesMeasurementApi = "22.1.0"
 googleGmsGoogleServices = "4.4.2"
+zxingAndroidEmbedded = "4.3.0"
 
 [libraries]
 activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 compiler-v4142 = { module = "com.github.bumptech.glide:compiler", version.ref = "compilerVersion" }
+core = { module = "com.google.zxing:core", version.ref = "core" }
 firebase-auth-v2101 = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuthVersion" }
 firebase-database-v2030 = { module = "com.google.firebase:firebase-database", version.ref = "firebaseDatabaseVersion" }
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseDatabase" }
@@ -41,6 +44,7 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
+zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
